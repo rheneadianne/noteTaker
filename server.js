@@ -38,13 +38,22 @@ const newNote = (body, notesArray) => {
 }
 
 app.get("/api/notes", (req, res) => { // gets existing notes listed in left hand column
-    res.sendFile(path.join(__dirname, "./db/db.json"));
+    let storedNotes = notesArray
+    res.json(storedNotes)
 })
 
-app.post("/api/notes", (req,res) => {
+app.post("/api/notes", (req,res) => { // adds new note to db.json when using save button
     req.body.id = uuidv4()
     const note = newNote(req.body, notesArray)
     res.json(note)
+})
+
+app.patch("/api/notes/:id", (req,res) => {
+    //idk what im doing here ill fix this
+    const findNote = notesArray.find(findNote.id == req.params.id)
+    if (!findNote) return res.sendStatus(404);
+    findNote.completed = !findNote.completed;
+    res.json(findNote)
 })
 
 app.get("/", (req, res) => { // gets index.html for landing page THEN I am presented with a landing page with a link to a notes page
