@@ -12,21 +12,6 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 
-// id = () => uuidv4() //testing uuid
-// console.log(id())
-
-// 
-// WHEN I click on the link to the notes page
-// THEN I am presented with a page with existing notes listed in the left-hand column, plus empty fields to enter a new note title and the note’s text in the right-hand column --> probably needs db.json
-// WHEN I enter a new note title and the note’s text
-// THEN a Save icon appears in the navigation at the top of the page ---> it already does that wym
-// WHEN I click on the Save icon
-// THEN the new note I have entered is saved and appears in the left-hand column with the other existing notes
-// WHEN I click on an existing note in the list in the left-hand column
-// THEN that note appears in the right-hand column
-// WHEN I click on the Write icon in the navigation at the top of the page
-// THEN I am presented with empty fields to enter a new note title and the note’s text in the right-hand column
-
 const newNote = (body, notesArray) => {
     const noteToAdd = body;
     notesArray.push(noteToAdd);
@@ -38,7 +23,6 @@ const newNote = (body, notesArray) => {
 }
 
 const deleteNote = (noteToRemove, notesList) => {
-    console.log("do it be working?")
     let indextoSplice = notesList.findIndex(noteList => noteList.id === noteToRemove)
     notesArray.splice(indextoSplice, 1)
     fs.writeFileSync(
@@ -62,14 +46,6 @@ app.delete("/api/notes/:id", async (req, res) => {
     let { id } = req.params
     const removedNotes = await deleteNote(id, notesArray)
     res.json(removedNotes)
-})
-
-app.patch("/api/notes/:id", (req,res) => {
-    //idk what im doing here ill fix this
-    const findNote = notesArray.find(findNote.id == req.params.id)
-    if (!findNote) return res.sendStatus(404);
-    findNote.completed = !findNote.completed;
-    res.json(findNote)
 })
 
 app.get("/", (req, res) => { // gets index.html for landing page THEN I am presented with a landing page with a link to a notes page

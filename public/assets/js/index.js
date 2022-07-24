@@ -42,15 +42,6 @@ const saveNote = (note) =>
     body: JSON.stringify(note),
   });
 
-const editNote = (note) =>
-  fetch(`/api/notes/${id}`, {
-    method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(note),
-  });
-
 const deleteNote = (id) =>
   fetch(`/api/notes/${id}`, {
     method: 'DELETE',
@@ -63,9 +54,13 @@ const renderActiveNote = () => {
   hide(saveNoteBtn);
 
   if (activeNote.id) {
+    noteTitle.setAttribute('readonly', true);
+    noteText.setAttribute('readonly', true);
     noteTitle.value = activeNote.title;
     noteText.value = activeNote.text;
   } else {
+    noteTitle.removeAttribute('readonly');
+    noteText.removeAttribute('readonly');
     noteTitle.value = '';
     noteText.value = '';
   }
@@ -76,18 +71,11 @@ const handleNoteSave = () => {
     title: noteTitle.value,
     text: noteText.value,
   };
-  if (newNote.id) {
-    editNote(newNote).then(() => {
-      getAndRenderNotes();
-      renderActiveNote();
-    });
-  } else {
-    saveNote(newNote).then(() => {
-      getAndRenderNotes();
-      renderActiveNote();
-    });
-}};
-
+  saveNote(newNote).then(() => {
+    getAndRenderNotes();
+    renderActiveNote();
+  });
+};
 
 // Delete the clicked note
 const handleNoteDelete = (e) => {
