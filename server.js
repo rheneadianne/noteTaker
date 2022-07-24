@@ -37,6 +37,16 @@ const newNote = (body, notesArray) => {
     return noteToAdd
 }
 
+const deleteNote = (noteToRemove, notesList) => {
+    console.log("do it be working?")
+    let indextoSplice = notesList.findIndex(noteList => noteList.id === noteToRemove)
+    notesArray.splice(indextoSplice, 1)
+    fs.writeFileSync(
+        path.join(__dirname, "./db/db.json"),
+        JSON.stringify({notesArray}, null, 2)
+    )
+}
+
 app.get("/api/notes", (req, res) => { // gets existing notes listed in left hand column
     let storedNotes = notesArray
     res.json(storedNotes)
@@ -46,6 +56,12 @@ app.post("/api/notes", (req,res) => { // adds new note to db.json when using sav
     req.body.id = uuidv4()
     const note = newNote(req.body, notesArray)
     res.json(note)
+})
+
+app.delete("/api/notes/:id", async (req, res) => {
+    let { id } = req.params
+    const removedNotes = await deleteNote(id, notesArray)
+    res.json(removedNotes)
 })
 
 app.patch("/api/notes/:id", (req,res) => {
