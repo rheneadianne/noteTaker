@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const { notesArray }  = require ('./db/db.json')
 
 const PORT = process.env.PORT || 3001;
 const app = express();
@@ -11,8 +12,8 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json())
 
-id = () => uuidv4() //testing uuid
-console.log(id())
+// id = () => uuidv4() //testing uuid
+// console.log(id())
 
 // 
 // WHEN I click on the link to the notes page
@@ -26,8 +27,24 @@ console.log(id())
 // WHEN I click on the Write icon in the navigation at the top of the page
 // THEN I am presented with empty fields to enter a new note title and the note’s text in the right-hand column
 
-app.get("/api/notes", (req, res) => {
+const newNote = (body, notesArray) => {
+    const noteToAdd = body;
+    notesArray.push(noteToAdd);
+    fs.writeFileSync(
+        path.join(__dirname, "./db/db.json"),
+        JSON.stringify({notesArray}, null, 2)
+    )
+    return noteToAdd
+}
+
+app.get("/api/notes", (req, res) => { // gets existing notes listed in left hand column
     res.sendFile(path.join(__dirname, "./db/db.json"));
+})
+
+app.post("/api/notes", (req,res) => {
+    req.body.id = uuidv4()
+    const note = newNote(req.body, notesArray)
+    res.json(note)
 })
 
 app.get("/", (req, res) => { // gets index.html for landing page THEN I am presented with a landing page with a link to a notes page
